@@ -1,26 +1,120 @@
-@import "tailwindcss";
+/**
+ * Homepage visuals use Endava’s production CSS bundle linked from `layout.tsx`.
+ * Keep resets minimal — their kit already normalizes typography and layout.
+ */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html,
+body {
+  margin: 0;
+  height: auto;
+  min-height: 100%;
+}
+
+body.en {
+  margin: 0;
+}
+
+/** Full-bleed shell (no unintended max-width / flex from Next wrappers). */
+#endava-pixel-shell {
+  width: 100%;
+  position: relative;
+}
+
+/* Capabilities / case studies replica: tall row mirrors live `min-h`; art stays inside the section (no viewport sticky bleed). */
+@media (width >= 1024px) {
+  #capabilities-case-studies-home .capabilities-desktop-row {
+    min-height: 1400px;
+  }
+
+  /*
+   * Bleed is handled only by `capabilities-home-lottie-wrap` Tailwind (`lg:ml-[calc(-1*(1068px_-_100%))]`).
+   * Do NOT add `_animationLeft` `left:-418px` here — it stacks with margin, slides art left, and opens a gap
+   * before the copy column without changing flex layout widths.
+   */
+  #capabilities-case-studies-home .capabilities-desktop-row > div:first-child {
+    position: relative !important;
+    width: 32% !important;
+    flex-shrink: 0 !important;
+  }
+
+  #capabilities-case-studies-home .capabilities-desktop-row > div:nth-child(2) {
+    width: 68% !important;
+    flex: 1 1 auto !important;
+  }
+
+  #capabilities-case-studies-home .capabilities-home-lottie-wrap {
+    position: absolute !important;
+    top: auto !important;
+    right: 0 !important;
+    left: auto !important;
+    width: 1068px !important;
+    height: 662px !important;
+    margin-left: 0 !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (width < 1024px) {
+  #capabilities-case-studies-home .capabilities-home-lottie-wrap {
+    position: relative;
+    left: auto !important;
+  }
+}
+
+/*
+ * Bands above inject `#industries-home` (#beforeHtml). Huge padding keeps arcs off the seam; background is
+ * forced below because this block is rendered outside HubSpot tree and tokens can omit `--color-*` here briefly.
+ */
+#capabilities-case-studies-home {
+  position: relative;
+  z-index: 2;
+  isolation: isolate;
+  /* Fallback if Tailwind `--color-*` cascade is inconsistent on this SSR→client splice. */
+  background-color: rgb(25 43 55);
+  padding-top: clamp(8rem, 18vw, 14rem);
+  padding-bottom: clamp(4rem, 10vw, 8rem);
+}
+
+@media (width >= 1024px) {
+  #capabilities-case-studies-home {
+    padding-top: clamp(14rem, min(28vw, 22rem), 22rem);
+    padding-bottom: clamp(5rem, min(12vw, 10rem), 10rem);
+  }
+}
+
+/* Extra runway before capabilities so the arc never reads tied to `#industries-home` footer. */
+#industries-home {
+  padding-bottom: clamp(2.5rem, 6vw, 5rem);
+  background-color: rgb(25 43 55);
+}
+
+/**
+ * "Our Customers Value" two-column row: live site moved from fixed `lg:h-[774px]` + `container`
+ * to `h-min-[1400px]` + horizontal `gap-x-[144px]`. Mirrored CSS may lag; enforce layout at lg+.
+ */
+@media (width >= 1024px) {
+  [data-testid="customers-value-container"]
+    > div[class*="gap-3xl"]
+    > div[class*="max-w-[1312px]"] {
+    min-height: 1400px;
+    column-gap: 144px;
+  }
+}
+
+/**
+ * HubSpot SSR often ships `style="opacity:0"` wrappers that islands are supposed to reveal.
+ * Beside Next/React 19 hydrate can fail or lag — users otherwise see blank dark panels matching only `bg-*`.
+ */
+#endava-pixel-shell [style*="opacity:0"] {
+  opacity: 1 !important;
 }

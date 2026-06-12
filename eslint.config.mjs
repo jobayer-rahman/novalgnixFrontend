@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    /** Mirrored CDN / HubSpot vendor files — ESLint parses them as TS and emits thousands of false positives. */
+    "public/__mirror/**",
+    "public/hubfs/**",
   ]),
 ]);
 

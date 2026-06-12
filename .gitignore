@@ -12,17 +12,33 @@
 
 # testing
 /coverage
+/test-results/
+/playwright-report/
+/blob-report/
 
 # next.js
 /.next/
 /out/
+
+# Mirror output is intentionally tracked (large). Use git sparse-checkout or LFS if needed.
 
 # production
 /build
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
+.eslintcache
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # debug
 npm-debug.log*
