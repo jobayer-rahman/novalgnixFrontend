@@ -32,51 +32,42 @@ export default function EndavaPixelExperience({
   steps,
 }: Props) {
   const shellRef = useRef<HTMLDivElement>(null);
-  const beforeRef = useRef<HTMLDivElement>(null);
-  const afterRef = useRef<HTMLDivElement>(null);
-
+  
   useLayoutEffect(() => {
     const shell = shellRef.current;
-    const beforeMount = beforeRef.current;
-    const afterMount = afterRef.current;
-    if (!shell || !beforeMount || !afterMount) return;
+    if (!shell) return;
 
-    beforeMount.innerHTML = beforeHtml;
-    afterMount.innerHTML = afterHtml;
     detachStaticShellIslands(shell);
 
     let cancelled = false;
 
-    void (async () => {
-      let anchor: HTMLElement = shell;
-
-      try {
-        anchor = await injectHeroIntroScroll(shell);
-      } catch (e) {
-        console.error('[endava-clone] hero intro script failed:', e);
-      }
-
-      if (steps.length === 0) return;
-
-      await injectIslandStepsAfterShell(
-        stripStaticShellIslandRegistrations(excludeHeroIntroFromSteps(steps)),
-        () => cancelled,
-        anchor,
-      );
-    })();
+    if (steps.length > 0) {
+      void (async () => {
+        await injectIslandStepsAfterShell(
+          stripStaticShellIslandRegistrations(excludeHeroIntroFromSteps(steps)),
+          () => cancelled,
+          shell,
+        );
+      })();
+    }
 
     return () => {
       cancelled = true;
     };
-  }, [beforeHtml, afterHtml, steps]);
+  }, [steps]);
 
   return (
     <div id="endava-pixel-shell" ref={shellRef} suppressHydrationWarning>
-      {[
-        <div key="endava-pixel-before-html" ref={beforeRef} suppressHydrationWarning />,
-        <Fragment key="endava-pixel-capabilities">{capabilities}</Fragment>,
-        <div key="endava-pixel-after-html" ref={afterRef} suppressHydrationWarning />,
-      ]}
+      <script src="/endava-pixel/home-intro-animation.js" defer />
+      <div
+        dangerouslySetInnerHTML={{ __html: beforeHtml }}
+        suppressHydrationWarning
+      />
+      <Fragment key="endava-pixel-capabilities">{capabilities}</Fragment>
+      <div
+        dangerouslySetInnerHTML={{ __html: afterHtml }}
+        suppressHydrationWarning
+      />
     </div>
   );
 }
